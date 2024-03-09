@@ -633,6 +633,11 @@ Using the above functions, the analysis is performed and the results saved. Belo
 <details>
 <summary>Click to see the sample results</summary>
 
+Scatter and line plot.
+<img src="images/Sample result 1.png" />
 
+Heatmaps. Fitted parameter values and fit type, respectively.
+<img src="images/Sample result 2.png" />
+<img src="images/Sample result 3.png" />
 
 </details>
