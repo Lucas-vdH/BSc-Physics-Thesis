@@ -98,8 +98,8 @@ def fitter(FPTfolder, FPTfilename, ST, fromThr, toThr, stepThr, p0, nohits_cut=0
     containing the fitted E0, f and s parameter, their uncertainties and the fit type (1 for good fit; 0 for failed chi square test or unphysical 
     values of the fitted parameters, which is the case when E0, f or s is negative; -1 if the fit could not converge; and -2
     if the data is cut before fitting). For the 0, -1 and -2 cases (so, if not a good fit), the value of the parameters is 0.
-    Zeros and NaN values are trimmed. Uses files named in the form <FPTfolder+FPTfilename+ST+'_THR_'+str(thr)+'.csv'>. 
-    Saves files named in the form <FPTfolder+'<datatype>_ST_'+ST+'.csv'>, where datatype is E0matrix, fmatrix, smatrix, fittypematrix
+    Zeros and NaN values are trimmed. Uses files named in the form ***. 
+    Saves files named in the form ***, where datatype is E0matrix, fmatrix, smatrix, fittypematrix
     or fixedfittypematrix.
 
     Arguments:
@@ -118,7 +118,7 @@ def fitter(FPTfolder, FPTfilename, ST, fromThr, toThr, stepThr, p0, nohits_cut=0
     '''
 
     #Loading FluxperASIC first to find indices of bad thresholds
-    fluxASIC=np.loadtxt(FPTfolder+***+str(fromThr)+'-'+str(toThr)+'-step'+str(stepThr)+'.csv', dtype=float, delimiter=',')
+    fluxASIC=np.loadtxt(FPTfolder+***+str(fromThr)+'-'+str(toThr)+***+str(stepThr)+'.csv', dtype=float, delimiter=',')
     
     #If for some thresholds, all acquisitions were bad (which returns nan) set a index to slice all pertinent data to leave the data after the bad thresholds
     #If all thresholds were good, nan_cut is set to 0, which doesn't slice the data
