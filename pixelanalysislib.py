@@ -13,34 +13,25 @@ plt.rcParams['text.usetex'] = True
 
 #65352 is the amount of functional pixels (256**2-maskedpixels).
 
-#Total acquisiton time per threshold: 
-#cool 1s310ms - 131s, step 5, range 280. Total thrs 56. Total time 7336s
-#cool 5s242ms - 524.2s, step 1, range 100. Total thrs 100. Total time 52420s
-#warm 1s310ms - 32.75s, step 1, range 80. Total thrs 80. Total time 2620s
-#warm 20s971ms - 2097.1s, step 5, range 300. Total thrs 60. Total time 125826s (but most cut data)
-#Total used thrs and acq time depends on pixel 
-
-
 
 def fluxpixelthr(filepath, fileprefix, ST, nacq, fromThr, toThr, stepThr, CUT_BAD=True, bad_cut=2):
     '''
     Creates a list of flux per pixel for each threshold, the uncertainty of the flux per pixel for each threshold,
     the total flux on the ASIC per threshold and the uncertainty of the total flux on the ASIC per threshold.
-    The analyzed data files are named in the form <filepath+fileprefix+str(ST)+'_THR_'+str(thr)+'_'+str(acq)+'.csv'>
-    (e.g. /data/bfys/LucasvdH/VELOdata/coolsource/Module0_VP0-1_ECS_data_ST_1s310ms_THR_1320_3.csv).
-    The saved files will be named in the form <filepath+'<datatype>'+fileprefix+str(ST)+'_THR_'+str(thr)+'.csv'>, 
-    where datatype is Fluxperpixel, FluxperASIC, UncertaintyFluxperpixel or UncertaintyFluxperASIC.
+    The analyzed data files are named in the form ***
+    (e.g. ***).
+    The saved files will be named in the form ***. 
 
     Arguments:
-    - filepath (str): Filepath (folder) to the data (e.g. '/data/bfys/LucasvdH/VELOdata/coolsource/').
-    - fileprefix (str): Prefix of the data files (e.g. 'Module0_VP0-1_ECS_data_ST_').
-    - ST (str): shutter time (e.g. '1s310ms').
-    - nacq (int): Number of acquisitions per threshold (e.g. 100).
-    - fromThr (int): Starting threshold of the scan (e.g. 1500).
-    - toThr (int): Ending threshold of the scan (e.g. 1600).
-    - stepThr (int): Increment of the threshold between scans (e.g. 5).
+    - filepath (str): Filepath (folder) to the data (e.g. ***).
+    - fileprefix (str): Prefix of the data files (e.g. ***).
+    - ST (str): shutter time (e.g. ***).
+    - nacq (int): Number of acquisitions per threshold (e.g. ***).
+    - fromThr (int): Starting threshold of the scan (e.g. ***).
+    - toThr (int): Ending threshold of the scan (e.g. ***).
+    - stepThr (int): Increment of the threshold between scans (e.g. ***).
     - CUT_BAD (bool): Default True. Skip data acquisitions that contain bad data. 
-    - bad_cut (float, int): Default 2. Used to identify bad data acquisitions. 
+    - bad_cut (float, int): Default ***. Used to identify bad data acquisitions. 
     If flux per pixel on the last columns exceeds bad_cut, it is faulty. 
     '''
     Thrs=[]
@@ -66,7 +57,7 @@ def fluxpixelthr(filepath, fileprefix, ST, nacq, fromThr, toThr, stepThr, CUT_BA
         goodacq=0
 
         for acq in range(nacq):
-            hits=np.loadtxt(filepath+fileprefix+str(ST)+'_THR_'+str(thr)+'_'+str(acq)+'.csv', dtype=int, delimiter=',')
+            hits=np.loadtxt(***, dtype=int, delimiter=',')
             hits=np.ma.masked_where(mask>0, hits)
             means, sigmas, BAD=check_badscan(hits, bad_cut)
             
@@ -80,14 +71,14 @@ def fluxpixelthr(filepath, fileprefix, ST, nacq, fromThr, toThr, stepThr, CUT_BA
         totalacqtime=goodacq*acqtime
         Flux.append(t_hits/totalacqtime)
         #Saves the flux on each pixel and, seperately, its uncertainty, as a 256x256 array
-        np.savetxt(filepath+'Fluxperpixel_'+fileprefix+str(ST)+'_THR_'+str(thr)+'.csv', t_hits/totalacqtime, delimiter=',')
-        np.savetxt(filepath+'UncertaintyFluxperpixel_'+fileprefix+str(ST)+'_THR_'+str(thr)+'.csv', np.sqrt(t_hits)/totalacqtime, delimiter=',')
+        np.savetxt(***, t_hits/totalacqtime, delimiter=',')
+        np.savetxt(***, np.sqrt(t_hits)/totalacqtime, delimiter=',')
         
         #Saves the total flux on the ASIC per threshold and, separately, its uncertainty, as a numberofthrs x 1 array
         F_ASIC[(thr-fromThr)/stepThr][0]=np.nansum(t_hits)/totalacqtime
         unc_F_ASIC[(thr-fromThr)/stepThr][0]=np.nansum(np.sqrt(t_hits))/totalacqtime
-    np.savetxt(filepath+'FluxperASIC_'+fileprefix+str(ST)+'_THR_'+str(fromThr)+'-'+str(toThr)+'-step'+str(stepThr)+'.csv', F_ASIC, delimiter=',')
-    np.savetxt(filepath+'UncertaintyFluxperASIC_'+fileprefix+str(ST)+'_THR_'+str(fromThr)+'-'+str(toThr)+'-step'+str(stepThr)+'.csv', unc_F_ASIC, delimiter=',')
+    np.savetxt(***, F_ASIC, delimiter=',')
+    np.savetxt(***, unc_F_ASIC, delimiter=',')
 
 def fitter(FPTfolder, FPTfilename, ST, fromThr, toThr, stepThr, p0, nohits_cut=0.8, alpha=0.05):
     '''
@@ -95,19 +86,18 @@ def fitter(FPTfolder, FPTfilename, ST, fromThr, toThr, stepThr, p0, nohits_cut=0
     containing the fitted E0, f and s parameter, their uncertainties and the fit type (1 for good fit; 0 for failed chi square test or unphysical 
     values of the fitted parameters, which is the case when E0, f or s is negative; -1 if the fit could not converge; and -2
     if the data is cut before fitting). For the 0, -1 and -2 cases (so, if not a good fit), the value of the parameters is 0.
-    Zeros and NaN values are trimmed. Uses files named in the form <FPTfolder+FPTfilename+ST+'_THR_'+str(thr)+'.csv'>. 
-    Saves files named in the form <FPTfolder+'<datatype>_ST_'+ST+'.csv'>, where datatype is E0matrix, fmatrix, smatrix, fittypematrix
-    or fixedfittypematrix.
+    Zeros and NaN values are trimmed. Uses files named in the form ***. 
+    Saves files named in the form ***.
 
     Arguments:
     - FPTfolder (str): Folder path to the Flux per Pixel per Threshold arrays files
-    (e.g. '/data/bfys/LucasvdH/VELOdata/coolsource/').
+    (e.g. ***).
     - FPTfilename (str): Path to the Flux per Pixel per Threshold arrays made by fluxpixelthr (needs importing)
-    (e.g. 'Fluxperpixel_Module0_VP0-1_ECS_data_ST_').
-    - ST (str): Shutter time (e.g. '1s310ms').
-    - fromThr (int): Starting threshold of the scan (e.g. 1500).
-    - toThr (int): Ending threshold of the scan (e.g. 1600).
-    - stepThr (int): Increment of the threshold between scans (e.g. 5).
+    (e.g. ***).
+    - ST (str): Shutter time (e.g. ***).
+    - fromThr (int): Starting threshold of the scan (e.g. ***).
+    - toThr (int): Ending threshold of the scan (e.g. ***).
+    - stepThr (int): Increment of the threshold between scans (e.g. ***).
     - p0 (list of length 4): initial guess of the parameters to fit [f, A, s, E0].
     - nohits_cut (float between 0 and 1): Default=0.8. Mask the pixel if it has too many zero-valued points 
     (e.g. nohits_cut=0.8 means that the pixel will be masked if the it got no hits for 80% or more of the thresholds).
@@ -115,7 +105,7 @@ def fitter(FPTfolder, FPTfilename, ST, fromThr, toThr, stepThr, p0, nohits_cut=0
     '''
 
     #Loading FluxperASIC first to find indices of bad thresholds
-    fluxASIC=np.loadtxt(FPTfolder+'FluxperASIC_Module0_VP0-1_ECS_data_ST_'+ST+'_THR_'+str(fromThr)+'-'+str(toThr)+'-step'+str(stepThr)+'.csv', dtype=float, delimiter=',')
+    fluxASIC=np.loadtxt(***, dtype=float, delimiter=',')
     
     #If for some thresholds, all acquisitions were bad (which returns nan) set a index to slice all pertinent data to leave the data after the bad thresholds
     #If all thresholds were good, nan_cut is set to 0, which doesn't slice the data
@@ -129,8 +119,8 @@ def fitter(FPTfolder, FPTfilename, ST, fromThr, toThr, stepThr, p0, nohits_cut=0
     FPT=[]
     unc_FPT=[]
     for thr in Thrs:
-        f=np.loadtxt(FPTfolder+FPTfilename+ST+'_THR_'+str(thr)+'.csv', dtype=float, delimiter=',')
-        u=np.loadtxt(FPTfolder+'UncertaintyFluxperpixel_Module0_VP0-1_ECS_data_ST_'+ST+'_THR_'+str(thr)+'.csv', dtype=float, delimiter=',')
+        f=np.loadtxt(***, dtype=float, delimiter=',')
+        u=np.loadtxt(***, dtype=float, delimiter=',')
         FPT.append(f)
         unc_FPT.append(u)
     
@@ -144,7 +134,7 @@ def fitter(FPTfolder, FPTfilename, ST, fromThr, toThr, stepThr, p0, nohits_cut=0
 
     #Performing fit for flux on ASIC
     fluxASIC=fluxASIC[nan_cut:]
-    unc_fluxASIC=np.loadtxt(FPTfolder+'UncertaintyFluxperASIC_Module0_VP0-1_ECS_data_ST_'+ST+'_THR_'+str(fromThr)+'-'+str(toThr)+'-step'+str(stepThr)+'.csv', dtype=float, delimiter=',')[nan_cut:]
+    unc_fluxASIC=np.loadtxt(***, dtype=float, delimiter=',')[nan_cut:]
     poptASIC, pcovASIC=curve_fit(fitfunction, Thrs, fluxASIC, sigma=unc_fluxASIC, p0=p0)
     poptASIC[1]=poptASIC[1]/65352 #To rescale to the flux on a single pixel. Used to calculate X2ASIC
     E0ASIC=poptASIC[-1] #Renaming for reading ease
@@ -235,24 +225,24 @@ def fitter(FPTfolder, FPTfilename, ST, fromThr, toThr, stepThr, p0, nohits_cut=0
         print('Analyzing this row took {:.2f} seconds\nEstimated time to finish analyzing the data set is {:.2f} minutes'.format(et-st, sum(analysistime)/len(analysistime)*(255-row)/60))
     
     #Saving the eight matrices
-    np.savetxt(FPTfolder+'E0matrix_ST_'+ST+'.csv', E0matrix, delimiter=',')
-    np.savetxt(FPTfolder+'uE0matrix_ST_'+ST+'.csv', uE0matrix, delimiter=',')
-    np.savetxt(FPTfolder+'fmatrix_ST_'+ST+'.csv', fmatrix, delimiter=',')
-    np.savetxt(FPTfolder+'ufmatrix_ST_'+ST+'.csv', ufmatrix, delimiter=',')
-    np.savetxt(FPTfolder+'smatrix_ST_'+ST+'.csv', smatrix, delimiter=',')
-    np.savetxt(FPTfolder+'usmatrix_ST_'+ST+'.csv', usmatrix, delimiter=',')
-    np.savetxt(FPTfolder+'Fittypematrix_ST_'+ST+'.csv', fittypematrix, delimiter=',')
-    np.savetxt(FPTfolder+'Fixedfittypematrix_ST_'+ST+'.csv', fixedfittypematrix, delimiter=',')
+    np.savetxt(***, E0matrix, delimiter=',')
+    np.savetxt(***, uE0matrix, delimiter=',')
+    np.savetxt(***, fmatrix, delimiter=',')
+    np.savetxt(***, ufmatrix, delimiter=',')
+    np.savetxt(***, smatrix, delimiter=',')
+    np.savetxt(***, usmatrix, delimiter=',')
+    np.savetxt(***, fittypematrix, delimiter=',')
+    np.savetxt(***, fixedfittypematrix, delimiter=',')
 
     #Printing where the matrices have been saved to make it easier to find them
-    print('\nE0matrix has been saved in {}'.format(FPTfolder+'E0matrix_ST_'+ST+'.csv'))
-    print('\nuE0matrix has been saved in {}'.format(FPTfolder+'uE0matrix_ST_'+ST+'.csv'))
-    print('\nfmatrix has been saved in {}'.format(FPTfolder+'fmatrix_ST_'+ST+'.csv'))
-    print('\nufmatrix has been saved in {}'.format(FPTfolder+'ufmatrix_ST_'+ST+'.csv'))
-    print('\nsmatrix has been saved in {}'.format(FPTfolder+'smatrix_ST_'+ST+'.csv'))
-    print('\nusmatrix has been saved in {}'.format(FPTfolder+'usmatrix_ST_'+ST+'.csv'))
-    print('\nFittypematrix has been saved in {}'.format(FPTfolder+'Fittypematrix_ST_'+ST+'.csv'))
-    print('\nFixedfittypematrix has been saved in {}'.format(FPTfolder+'Fixedfittypematrix_ST_'+ST+'.csv'))
+    print('\nE0matrix has been saved in {}'.format(***))
+    print('\nuE0matrix has been saved in {}'.format(***))
+    print('\nfmatrix has been saved in {}'.format(***))
+    print('\nufmatrix has been saved in {}'.format(***))
+    print('\nsmatrix has been saved in {}'.format(***))
+    print('\nusmatrix has been saved in {}'.format(***))
+    print('\nFittypematrix has been saved in {}'.format(***))
+    print('\nFixedfittypematrix has been saved in {}'.format(***))
     
 #x and y limits might malfunction and colors won't match if length of rows and columns is higher than one
 #Significant digits of fitted parameters and their uncertainties are adjusted manually
@@ -264,13 +254,13 @@ def pixelscanplot(FPTfolder, FPTfilename, ST, fromThr, toThr, stepThr, p0, rows,
 
     Arguments:
     - FPTfolder (str): Folder path to the Flux per Pixel per Threshold arrays files
-    (e.g. '/data/bfys/LucasvdH/VELOdata/coolsource/').
+    (e.g. ***).
     - FPTfilename (str): Path to the Flux per Pixel per Threshold arrays made by fluxpixelthr (needs importing)
-    (e.g. 'Module0_VP0-1_ECS_data_ST_').
-    - ST (str): Shutter time (e.g. '1s310ms').
-    - fromThr (int): Starting threshold of the scan (e.g. 1500).
-    - toThr (int): Ending threshold of the scan (e.g. 1600).
-    - stepThr (int): Increment of the threshold between scans (e.g. 5).
+    (e.g. ***).
+    - ST (str): Shutter time (e.g. ***).
+    - fromThr (int): Starting threshold of the scan (e.g. ***).
+    - toThr (int): Ending threshold of the scan (e.g. ***).
+    - stepThr (int): Increment of the threshold between scans (e.g. ***).
     - p0 (list of length 4): initial guess of the parameters to fit.
     - rows (list): rows of the pixels to be analyzed.
     - columns (list): columns of the pixels to be analyzed.    
@@ -278,7 +268,7 @@ def pixelscanplot(FPTfolder, FPTfilename, ST, fromThr, toThr, stepThr, p0, rows,
     '''
 
     #Loading FluxperASIC first to find indices of bad thresholds
-    fluxASIC=np.loadtxt(FPTfolder+'FluxperASIC_Module0_VP0-1_ECS_data_ST_'+ST+'_THR_'+str(fromThr)+'-'+str(toThr)+'-step'+str(stepThr)+'.csv', dtype=float, delimiter=',')
+    fluxASIC=np.loadtxt(***, dtype=float, delimiter=',')
 
     #If for some thresholds, all acquisitions were bad (which returns nan) set a index to slice all pertinent data to leave the data after the bad thresholds
     #If all thresholds were good, nan_cut is set to 0, which doesn't slice the data
@@ -294,14 +284,14 @@ def pixelscanplot(FPTfolder, FPTfilename, ST, fromThr, toThr, stepThr, p0, rows,
     FPT=[]
     unc_FPT=[]
     for thr in Thrs:
-        f=np.loadtxt(FPTfolder+'Fluxperpixel_'+FPTfilename+ST+'_THR_'+str(thr)+'.csv', dtype=float, delimiter=',')
-        u=np.loadtxt(FPTfolder+'UncertaintyFluxperpixel_'+FPTfilename+ST+'_THR_'+str(thr)+'.csv', dtype=float, delimiter=',')
+        f=np.loadtxt(***, dtype=float, delimiter=',')
+        u=np.loadtxt(***, dtype=float, delimiter=',')
         FPT.append(f)
         unc_FPT.append(u)
 
     fluxASIC=fluxASIC[nan_cut:]
     #Loading the uncertainty of the flux on the ASIC
-    unc_fluxASIC=np.loadtxt(FPTfolder+'UncertaintyFluxperASIC_'+FPTfilename+ST+'_THR_'+str(fromThr)+'-'+str(toThr)+'-step'+str(stepThr)+'.csv', dtype=float, delimiter=',')
+    unc_fluxASIC=np.loadtxt(***, dtype=float, delimiter=',')
     unc_fluxASIC=unc_fluxASIC[nan_cut:]
     thrsASIC=Thrs
 
@@ -413,8 +403,8 @@ def pixelscanplot(FPTfolder, FPTfilename, ST, fromThr, toThr, stepThr, p0, rows,
     plt.title('ST={} from {}'.format(ST, FPTfolder.split('/')[-2])) #To distinguish data sets
 
     plt.legend(fontsize=8)
-    plt.savefig('/data/bfys/LucasvdH/VELOdata/plots/IndividualPixelPlots/'+'IndPixelPlot_'+FPTfolder.split('/')[-2]+'_ST_'+ST+'.png', format='png')
-    print('\nThe figure has been saved in {}\n'.format('/data/bfys/LucasvdH/VELOdata/plots/IndividualPixelPlots/'+'IndPixelPlot_'+FPTfolder.split('/')[-2]+'_ST_'+ST+'.png'))
+    plt.savefig(***, format='png')
+    print('\nThe figure has been saved in {}\n'.format(***))
 
 def heatmapplot(filepath, ST, E0=True, f=True, s=True):
     '''
@@ -431,25 +421,25 @@ def heatmapplot(filepath, ST, E0=True, f=True, s=True):
     
         
     #Loading the matrices obtained from Matricesgenerator.py using fitter
-    E0=np.loadtxt(filepath+'E0matrix_ST_'+ST+'.csv', dtype=float, delimiter=',')
-    uE0=np.loadtxt(filepath+'uE0matrix_ST_'+ST+'.csv', dtype=float, delimiter=',')
+    E0=np.loadtxt(***, dtype=float, delimiter=',')
+    uE0=np.loadtxt(***, dtype=float, delimiter=',')
     #Masking the pixels that didn't go through the fitting process, were unable to find a fit or found a bad fit (for all of these cases, the parameters are assigned a value of 0)
     E0=np.ma.masked_where(E0<=0, E0)
     uE0=np.ma.masked_where(E0<=0, uE0)
 
-    f=np.loadtxt(filepath+'fmatrix_ST_'+ST+'.csv', dtype=float, delimiter=',')
-    uf=np.loadtxt(filepath+'ufmatrix_ST_'+ST+'.csv', dtype=float, delimiter=',')
+    f=np.loadtxt(***, dtype=float, delimiter=',')
+    uf=np.loadtxt(***, dtype=float, delimiter=',')
     f=np.ma.masked_where(f<=0, f)
     uf=np.ma.masked_where(f<=0, uf)
 
-    s=np.loadtxt(filepath+'smatrix_ST_'+ST+'.csv', dtype=float, delimiter=',')
-    us=np.loadtxt(filepath+'usmatrix_ST_'+ST+'.csv', dtype=float, delimiter=',')
+    s=np.loadtxt(***, dtype=float, delimiter=',')
+    us=np.loadtxt(***, dtype=float, delimiter=',')
     s=np.ma.masked_where(s<=0, s)
     us=np.ma.masked_where(s<=0, us)
 
-    fittype=np.loadtxt(filepath+'Fittypematrix_ST_'+ST+'.csv', dtype=float, delimiter=',')
+    fittype=np.loadtxt(***, dtype=float, delimiter=',')
 
-    fixedfittype=np.loadtxt(filepath+'Fixedfittypematrix_ST_'+ST+'.csv', dtype=float, delimiter=',')
+    fixedfittype=np.loadtxt(***, dtype=float, delimiter=',')
 
     #Calculating weighted average of parameters and the uncertainty of the average
     swE0, swf, sws=0, 0, 0
@@ -509,8 +499,8 @@ def heatmapplot(filepath, ST, E0=True, f=True, s=True):
     plt.xlabel('Pixel columns', fontsize=15)
     plt.colorbar()
 
-    plt.savefig('/data/bfys/LucasvdH/VELOdata/plots/Heatmaps/E0/Heatmap_'+filepath.split('/')[-2]+'ST'+ST+'.png', format='png')
-    print('\nThe E0 heatmap has been saved in {}'.format('/data/bfys/LucasvdH/VELOdata/plots/Heatmaps/E0/Heatmap_'+filepath.split('/')[-2]+'ST'+ST+'.png'))
+    plt.savefig(***, format='png')
+    print('\nThe E0 heatmap has been saved in {}'.format(***))
 
 
     #f heatmap
@@ -528,8 +518,8 @@ def heatmapplot(filepath, ST, E0=True, f=True, s=True):
     plt.xlabel('Pixel columns', fontsize=15)
     plt.colorbar()
 
-    plt.savefig('/data/bfys/LucasvdH/VELOdata/plots/Heatmaps/f/Heatmap_'+filepath.split('/')[-2]+'ST'+ST+'.png', format='png')
-    print('\nThe f heatmap has been saved in {}'.format('/data/bfys/LucasvdH/VELOdata/plots/Heatmaps/f/Heatmap_'+filepath.split('/')[-2]+'ST'+ST+'.png'))
+    plt.savefig(***', format='png')
+    print('\nThe f heatmap has been saved in {}'.format(***))
 
     #s heatmap
     CMAP=plt.get_cmap('winter')
@@ -546,8 +536,8 @@ def heatmapplot(filepath, ST, E0=True, f=True, s=True):
     plt.xlabel('Pixel columns', fontsize=15)
     plt.colorbar()
 
-    plt.savefig('/data/bfys/LucasvdH/VELOdata/plots/Heatmaps/s/Heatmap_'+filepath.split('/')[-2]+'ST'+ST+'.png', format='png')
-    print('\nThe s heatmap has been saved in {}'.format('/data/bfys/LucasvdH/VELOdata/plots/Heatmaps/s/Heatmap_'+filepath.split('/')[-2]+'ST'+ST+'.png'))
+    plt.savefig(***, format='png')
+    print('\nThe s heatmap has been saved in {}'.format(***))
 
 
 
@@ -579,8 +569,8 @@ def heatmapplot(filepath, ST, E0=True, f=True, s=True):
     ax5.set_xlabel('Pixel columns')
     fig.colorbar(cf5, ax=ax5, ticks=(-1.64, -0.88, -0.13, 0.62)).set_ticklabels(['Cut data', 'Fit not found', 'Bad fit', 'Good fit'])  
 
-    plt.savefig('/data/bfys/LucasvdH/VELOdata/plots/Heatmaps/Fit_type/Heatmaps_'+filepath.split('/')[-2]+'ST'+ST+'.png', format='png')
-    print('\nThe fit type heatmap has been saved in {}'.format('/data/bfys/Lucas/VELOdata/plots/Heatmaps/Fit_type/Heatmaps_'+filepath.split('/')[-2]+'ST'+ST+'.png'))
+    plt.savefig(***, format='png')
+    print('\nThe fit type heatmap has been saved in {}'.format(***))
 
 def chisquare(O, E, Oerr):
     '''
@@ -606,38 +596,25 @@ def chisquare(O, E, Oerr):
 
     return X2
 
+#Functions below are written by team member and given to me at the beggining of the project
 #From MD
 def fitfunction(E, f, A, s, E0):
-    term1 = f * A / 2 * (E0 - E) * erfc((E - E0) / s)
-    term2 = (1 - f) * A / (2 * np.sqrt(2 * np.pi) * s) * erfc((E - E0) / (np.sqrt(2) * s))
-    return (term1 + term2) * 100000
+    '''
+    Mathematical model of flux as a function of threshold with the inputs as parameters
+    '''
+    y=***
+    return y
 
 #From MD
 def check_badscan(matrix, bad_cut):
-  BAD = False
-  #divide in columns
-  column1 = 0
-  column2= 15
-  means = []
-  sigmas = []
-  while (column2 < 256):
-    slice=matrix[0:256,column1:column2+1]
-    slice = np.array(slice, dtype='f')
-    means.append(slice.mean())
-    sigmas.append(slice.std())
-    column1+=16
-    column2+=16
-  means = np.array(means,dtype='f')
-  sigmas = np.array(sigmas,dtype='f')
-  if (means[15]>bad_cut):
-    BAD = True
-  
-  return means, sigmas, BAD
+    '''
+    Checks if a acquisition run is faulty. Returns a boolean.
+    '''
+  return BAD
 
 #From MD
 def get_mask(filepath, filename):
-  
-  module = filename.split("_")[0]
-  velopix = filename.split("_")[1]
-  mask = np.loadtxt(filepath+module+"_"+velopix+"_Matrix_Mask.csv", dtype=int, delimiter = ',')
+  '''
+  Returns the masked (inactive) pixels from the VELO's testing module (pixel grid).
+  '''
   return mask
