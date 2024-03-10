@@ -86,7 +86,7 @@ def fluxpixelthr(filepath, fileprefix, ST, nacq, fromThr, toThr, stepThr, CUT_BA
 </details>
 
 ### 2. Fitting the data
-Possessing the flux per threshold, a function ```fitter``` is now written to load these, filter out the pixels with insufficient data to perform a fit and fit the mathematical model to the remaining pixels. After the fit, a 256x256 csv file is saved containing the value of the fitted parameters of the model (three parameters), another 256x256 csv file per parameter with the uncertainties and the last 256x256 csv containing the arbitrarily defined fit type per pixel (no fit attempt, no fit found, bad fit, good fit). See below for the code snippet.
+Possessing the flux per threshold, a function ```fitter``` is now written to load these, filter out the pixels with insufficient data to perform a fit and fit the mathematical model to the remaining pixels. After the fit, for each fitted parameter (three), two 256x256 csv files are generated: one with the value of the fitted parameter and one with the uncertainties of the parameter for each pixel. Then, another 256x256 csv file is saved containing the arbitrarily defined fit type per pixel (no fit attempt, no fit found, bad fit, good fit). See below for the code snippet.
 
 <details>
 <summary>Click to see the code snippet</summary>
