@@ -303,8 +303,8 @@ def pixelscanplot(FPTfolder, FPTfilename, ST, fromThr, toThr, stepThr, p0, rows,
     FPT=[]
     unc_FPT=[]
     for thr in Thrs:
-        f=np.loadtxt(FPTfolder+'Fluxperpixel_'+FPTfilename+ST+***+str(thr)+'.csv', dtype=float, delimiter=',')
-        u=np.loadtxt(FPTfolder+'UncertaintyFluxperpixel_'+FPTfilename+ST+***+str(thr)+'.csv', dtype=float, delimiter=',')
+        f=np.loadtxt(FPTfolder+***+FPTfilename+ST+***+str(thr)+'.csv', dtype=float, delimiter=',')
+        u=np.loadtxt(FPTfolder+***+FPTfilename+ST+***+str(thr)+'.csv', dtype=float, delimiter=',')
         FPT.append(f)
         unc_FPT.append(u)
 
